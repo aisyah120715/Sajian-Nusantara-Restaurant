@@ -636,10 +636,12 @@ export default {
   transform: rotate(-45deg) translate(7px, -7px);
 }
 
+/* Updated Container - Made wider */
 .order-history-container {
-  max-width: 1000px;
+  max-width: 1200px; /* Increased from 1000px */
   margin: 3rem auto;
   padding: 0 2rem;
+  width: 100%;
 }
 
 .loading-state,
@@ -737,17 +739,22 @@ export default {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 16px;
-  padding: 2rem;
+  padding: 2.5rem; /* Increased padding */
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .order-card:hover {
   border-color: rgba(139, 92, 246, 0.3);
   transform: translateY(-2px);
+  box-shadow: 
+    0 30px 60px -12px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .order-header {
@@ -771,14 +778,14 @@ export default {
 }
 
 .order-number {
-  font-size: 1.25rem;
+  font-size: 1.4rem; /* Slightly larger */
   font-weight: 600;
   color: #ffffff;
   margin: 0 0 0.25rem 0;
 }
 
 .order-date {
-  font-size: 0.875rem;
+  font-size: 0.95rem; /* Slightly larger */
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
 }
@@ -810,9 +817,9 @@ export default {
   flex-direction: column;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
-  padding: 1rem;
+  padding: 1.25rem; /* Increased padding */
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
+  border-radius: 12px; /* Slightly larger radius */
 }
 
 .detail-row {
@@ -822,13 +829,13 @@ export default {
 }
 
 .detail-label {
-  font-size: 0.875rem;
+  font-size: 0.95rem; /* Slightly larger */
   color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
 }
 
 .detail-value {
-  font-size: 0.875rem;
+  font-size: 0.95rem; /* Slightly larger */
   color: #ffffff;
   font-weight: 600;
 }
@@ -838,14 +845,14 @@ export default {
 }
 
 .items-title {
-  font-size: 1rem;
+  font-size: 1.1rem; /* Slightly larger */
   font-weight: 600;
   color: #ffffff;
   margin: 0 0 1rem 0;
 }
 
 .order-item-row {
-  padding: 0.75rem 0;
+  padding: 0.85rem 0; /* Increased padding */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -861,18 +868,18 @@ export default {
 }
 
 .item-name {
-  font-size: 0.95rem;
+  font-size: 1rem; /* Slightly larger */
   color: #ffffff;
   font-weight: 500;
 }
 
 .item-quantity {
-  font-size: 0.875rem;
+  font-size: 0.95rem; /* Slightly larger */
   color: rgba(255, 255, 255, 0.6);
 }
 
 .item-price {
-  font-size: 0.95rem;
+  font-size: 1rem; /* Slightly larger */
   color: #8B5CF6;
   font-weight: 600;
 }
@@ -883,7 +890,7 @@ export default {
 }
 
 .item-notes small {
-  font-size: 0.75rem;
+  font-size: 0.8rem; /* Slightly larger */
   color: rgba(255, 255, 255, 0.5);
   font-style: italic;
 }
@@ -900,12 +907,12 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.95rem;
+  font-size: 1rem; /* Slightly larger */
   color: rgba(255, 255, 255, 0.8);
 }
 
 .summary-row.total-row {
-  font-size: 1.25rem;
+  font-size: 1.4rem; /* Slightly larger */
   font-weight: 700;
   color: #ffffff;
   padding-top: 0.75rem;
@@ -920,6 +927,7 @@ export default {
   background-clip: text;
 }
 
+/* Mobile layout remains exactly the same */
 @media (max-width: 768px) {
   .header {
     padding: 12px 0;
@@ -1037,10 +1045,11 @@ export default {
   .order-history-container {
     margin: 2rem auto;
     padding: 0 1rem;
+    max-width: 100%; /* Full width on mobile */
   }
 
   .order-card {
-    padding: 1.5rem;
+    padding: 1.5rem; /* Original mobile padding */
   }
 
   .order-header {
@@ -1052,6 +1061,59 @@ export default {
   .order-type-badge {
     align-self: flex-start;
   }
+
+  /* Reset mobile sizes to original */
+  .order-number {
+    font-size: 1.25rem;
+  }
+
+  .order-date {
+    font-size: 0.875rem;
+  }
+
+  .detail-label,
+  .detail-value {
+    font-size: 0.875rem;
+  }
+
+  .items-title {
+    font-size: 1rem;
+  }
+
+  .item-name,
+  .item-price {
+    font-size: 0.95rem;
+  }
+
+  .item-quantity {
+    font-size: 0.875rem;
+  }
+
+  .item-notes small {
+    font-size: 0.75rem;
+  }
+
+  .summary-row {
+    font-size: 0.95rem;
+  }
+
+  .summary-row.total-row {
+    font-size: 1.25rem;
+  }
+}
+
+/* Tablet responsive adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .order-history-container {
+    max-width: 900px;
+    padding: 0 1.5rem;
+  }
+}
+
+/* For extra large screens */
+@media (min-width: 1400px) {
+  .order-history-container {
+    max-width: 1400px;
+  }
 }
 </style>
-
