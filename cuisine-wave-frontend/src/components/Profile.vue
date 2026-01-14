@@ -63,7 +63,7 @@
       </div>
     </header>
 
-    <!-- Main Container -->
+    <!-- Main Container - Modified for no-scroll layout -->
     <div class="profile-container">
       <div class="profile-card">
         <!-- Profile Avatar -->
@@ -86,73 +86,87 @@
           <button @click="loadUserProfile" class="btn-retry">Retry</button>
         </div>
 
-        <!-- Profile Form -->
+        <!-- Profile Form - Modified for side-by-side layout -->
         <form v-else-if="userProfile" @submit.prevent="saveProfile" class="profile-form">
-          <div class="form-group">
-            <label class="form-label">Username</label>
-            <input 
-              type="text" 
-              v-model="profileForm.username" 
-              class="form-input"
-              required
-              placeholder="Enter username"
-            />
-          </div>
+          <div class="profile-form-grid">
+            <!-- Left Column -->
+            <div class="profile-form-column">
+              <div class="form-group">
+                <label class="form-label">Username</label>
+                <input 
+                  type="text" 
+                  v-model="profileForm.username" 
+                  class="form-input"
+                  required
+                  placeholder="Enter username"
+                />
+              </div>
 
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input 
-              type="email" 
-              :value="userProfile.email" 
-              class="form-input"
-              disabled
-              placeholder="Email cannot be changed"
-            />
-            <small class="form-hint">Email cannot be changed</small>
-          </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  :value="userProfile.email" 
+                  class="form-input"
+                  disabled
+                  placeholder="Email cannot be changed"
+                />
+                <small class="form-hint">Email cannot be changed</small>
+              </div>
 
-          <div class="form-group">
-            <label class="form-label">Phone Number</label>
-            <input 
-              type="tel" 
-              v-model="profileForm.phoneNumber" 
-              class="form-input"
-              placeholder="Enter phone number"
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Role</label>
-            <div class="form-input disabled">
-              <span :class="['profile-role-badge', userProfile.role?.toLowerCase()]">
-                {{ userProfile.role || 'USER' }}
-              </span>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input 
+                  type="tel" 
+                  v-model="profileForm.phoneNumber" 
+                  class="form-input"
+                  placeholder="Enter phone number"
+                />
+              </div>
             </div>
-            <small class="form-hint">Role cannot be changed</small>
-          </div>
 
-          <div class="form-group">
-            <label class="form-label">Member Since</label>
-            <div class="form-input disabled">
-              {{ formatProfileDate(userProfile.createdAt) }}
+            <!-- Right Column -->
+            <div class="profile-form-column">
+              <div class="form-group">
+                <label class="form-label">Role</label>
+                <div class="form-input disabled">
+                  <span :class="['profile-role-badge', userProfile.role?.toLowerCase()]">
+                    {{ userProfile.role || 'USER' }}
+                  </span>
+                </div>
+                <small class="form-hint">Role cannot be changed</small>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Member Since</label>
+                <div class="form-input disabled">
+                  {{ formatProfileDate(userProfile.createdAt) }}
+                </div>
+              </div>
+
+              <!-- Empty space to align with left column -->
+              <div class="form-group placeholder"></div>
             </div>
           </div>
 
-          <div v-if="saveError" class="error-message">
-            {{ saveError }}
-          </div>
+          <!-- Messages and Actions -->
+          <div class="profile-form-bottom">
+            <div v-if="saveError" class="error-message">
+              {{ saveError }}
+            </div>
 
-          <div v-if="saveSuccess" class="success-message">
-            Profile updated successfully!
-          </div>
+            <div v-if="saveSuccess" class="success-message">
+              Profile updated successfully!
+            </div>
 
-          <div class="form-actions">
-            <button type="button" @click="$emit('show-home')" class="btn-cancel">
-              Cancel
-            </button>
-            <button type="submit" class="btn-save" :disabled="isSaving">
-              {{ isSaving ? 'Saving...' : 'Save Changes' }}
-            </button>
+            <div class="form-actions">
+              <button type="button" @click="$emit('show-home')" class="btn-cancel">
+                Cancel
+              </button>
+              <button type="submit" class="btn-save" :disabled="isSaving">
+                {{ isSaving ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -390,7 +404,6 @@ export default {
   background-attachment: fixed;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: #ffffff;
-  padding-bottom: 2rem;
 }
 
 /* Header Navigation */
@@ -687,10 +700,15 @@ export default {
   transform: rotate(-45deg) translate(7px, -7px);
 }
 
+/* MODIFIED FOR FIXED HEIGHT LAYOUT */
 .profile-container {
-  max-width: 800px;
-  margin: 3rem auto;
-  padding: 0 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  height: calc(100vh - 90px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-card {
@@ -703,6 +721,11 @@ export default {
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 900px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-avatar-section {
@@ -710,11 +733,12 @@ export default {
   margin-bottom: 3rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .profile-avatar-circle {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
   display: flex;
@@ -729,7 +753,7 @@ export default {
 .profile-initial {
   color: white;
   font-weight: 600;
-  font-size: 3rem;
+  font-size: 2.5rem;
   line-height: 1;
 }
 
@@ -743,8 +767,13 @@ export default {
 .profile-loading,
 .profile-error {
   text-align: center;
-  padding: 3rem;
+  padding: 2rem;
   color: rgba(255, 255, 255, 0.7);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-loading .spinner {
@@ -784,16 +813,45 @@ export default {
   border-color: rgba(139, 92, 246, 0.5);
 }
 
+/* NEW GRID LAYOUT FOR FORMS */
 .profile-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.profile-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profile-form-bottom {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.form-group.placeholder {
+  opacity: 0;
+  pointer-events: none;
+  height: 3.5rem;
 }
 
 .form-label {
@@ -814,6 +872,8 @@ export default {
   background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
   transition: all 0.3s ease;
+  height: 48px;
+  box-sizing: border-box;
 }
 
 .form-input:focus {
@@ -873,6 +933,7 @@ export default {
   border-radius: 8px;
   border: 1px solid rgba(255, 107, 107, 0.3);
   font-size: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 .success-message {
@@ -882,15 +943,13 @@ export default {
   border-radius: 8px;
   border: 1px solid rgba(6, 182, 212, 0.3);
   font-size: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 .form-actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  margin-top: 1rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-cancel {
@@ -902,6 +961,7 @@ export default {
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
+  min-width: 120px;
 }
 
 .btn-cancel:hover {
@@ -920,6 +980,7 @@ export default {
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  min-width: 140px;
 }
 
 .btn-save:hover:not(:disabled) {
@@ -933,6 +994,146 @@ export default {
   cursor: not-allowed;
   transform: none;
 }
+
+/* Custom scrollbar for the form */
+.profile-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.profile-form::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.profile-form::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+
+.profile-form::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* ====== UPDATED LAPTOP LAYOUT - MORE COMPACT ====== */
+
+/* Medium screens (tablet) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .profile-container {
+    max-width: 900px;
+    padding: 1.5rem;
+  }
+
+  .profile-card {
+    padding: 2rem;
+  }
+
+  .profile-form-grid {
+    gap: 1.5rem;
+  }
+
+  .profile-avatar-circle {
+    width: 90px;
+    height: 90px;
+  }
+
+  .profile-initial {
+    font-size: 2rem;
+  }
+}
+
+/* Large screens (laptop) - COMPACT VERSION */
+@media (min-width: 1025px) {
+  .profile-container {
+    padding: 1rem 2rem;
+    height: calc(100vh - 80px);
+  }
+  
+  .profile-card {
+    padding: 2rem;
+    max-height: 550px;
+  }
+  
+  .profile-avatar-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+  
+  .profile-avatar-circle {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .profile-initial {
+    font-size: 1.75rem;
+  }
+  
+  .profile-name {
+    font-size: 1.25rem;
+  }
+  
+  .profile-form {
+    gap: 1rem;
+  }
+  
+  .profile-form-grid {
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-form-column {
+    gap: 1rem;
+  }
+  
+  .profile-form-bottom {
+    padding-top: 1rem;
+  }
+  
+  .form-group {
+    gap: 0.375rem;
+  }
+  
+  .form-label {
+    font-size: 0.8rem;
+  }
+  
+  .form-input {
+    padding: 0.75rem 1rem;
+    height: 44px;
+    font-size: 0.95rem;
+  }
+  
+  .form-input.disabled {
+    min-height: 44px;
+  }
+  
+  .btn-cancel,
+  .btn-save {
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .profile-role-badge {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.75rem;
+  }
+  
+  .form-hint {
+    font-size: 0.7rem;
+  }
+  
+  .error-message,
+  .success-message {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .profile-form::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+/* ====== RESPONSIVE STYLES - MOBILE ====== */
 
 @media (max-width: 768px) {
   .header {
@@ -1048,22 +1249,31 @@ export default {
     min-width: 180px;
   }
 
+  /* Mobile layout overrides for fixed height */
   .profile-container {
-    margin: 2rem auto;
-    padding: 0 1rem;
+    height: auto;
+    min-height: calc(100vh - 90px);
+    padding: 1rem;
+    display: block;
   }
 
   .profile-card {
-    padding: 2rem 1.5rem;
+    max-height: none;
+    padding: 1.5rem;
+    margin: 0;
   }
 
-  .profile-avatar-circle {
-    width: 100px;
-    height: 100px;
+  .profile-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
-  .profile-initial {
-    font-size: 2.5rem;
+  .profile-form-column {
+    gap: 1.5rem;
+  }
+
+  .form-group.placeholder {
+    display: none;
   }
 
   .form-actions {
@@ -1073,7 +1283,7 @@ export default {
   .btn-cancel,
   .btn-save {
     width: 100%;
+    min-width: 0;
   }
 }
 </style>
-
