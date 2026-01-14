@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JWT Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 3px;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>JWT Authentication Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Check Stored Token</h3>
+        <button onclick="checkToken()">Check Token</button>
+        <div id="tokenResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Test Protected Endpoint (with token)</h3>
+        <button onclick="testProtected()">Test /api/test</button>
+        <div id="protectedResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Test Protected Endpoint (without token)</h3>
+        <button onclick="testWithoutToken()">Test Without Token</button>
+        <div id="noTokenResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Clear Token</h3>
+        <button onclick="clearToken()">Clear Token</button>
+        <div id="clearResult" class="result"></div>
+    </div>
+
+    <script>
+        function checkToken() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            const result = document.getElementById('tokenResult');
+            
+            if (token) {
+                result.innerHTML = `<span class="success">✓ Token found!</span>\n\nToken: ${token.substring(0, 50)}...\n\nUser: ${user || 'Not found'}`;
+            } else {
+                result.innerHTML = `<span class="error">✗ No token found. Please login first.</span>`;
+            }
+        }
+
+        async function testProtected() {
+            const token = localStorage.getItem('token');
+            const result = document.getElementById('protectedResult');
+            
+            if (!token) {
+                result.innerHTML = '<span class="error">No token found. Please login first.</span>';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/api/test', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.text();
+                
+                if (response.ok) {
+                    result.innerHTML = `<span class="success">✓ Success!</span>\n\nStatus: ${response.status}\nResponse: ${data}`;
+                } else {
+                    result.innerHTML = `<span class="error">✗ Failed</span>\n\nStatus: ${response.status}\nResponse: ${data}`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+            }
+        }
+
+        async function testWithoutToken() {
+            const result = document.getElementById('noTokenResult');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/test');
+                const data = await response.text();
+                
+                if (response.status === 403 || response.status === 401) {
+                    result.innerHTML = `<span class="success">✓ Security working!</span>\n\nStatus: ${response.status} (Expected: 403/401)\nResponse: ${data}`;
+                } else {
+                    result.innerHTML = `<span class="error">✗ Unexpected response</span>\n\nStatus: ${response.status}\nResponse: ${data}`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+            }
+        }
+
+        function clearToken() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            document.getElementById('clearResult').innerHTML = '<span class="success">Token cleared!</span>';
+        }
+    </script>
+</body>
+</html>
+
