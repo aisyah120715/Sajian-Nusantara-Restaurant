@@ -646,6 +646,9 @@ export default {
         })
       }
       return days
+    },
+    isLoggedIn() {
+      return !!this.currentUser && !!localStorage.getItem('token')
     }
   },
   mounted() {
@@ -936,11 +939,6 @@ export default {
       if (!userMenuContainer && this.isUserMenuOpen) {
         this.isUserMenuOpen = false
       }
-    }
-  },
-  computed: {
-    isLoggedIn() {
-      return !!this.currentUser && !!localStorage.getItem('token')
     }
   }
 }
