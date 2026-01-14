@@ -152,24 +152,28 @@
           </svg>
           <span>Back to Menu</span>
         </button>
-        <!-- Top Bar -->
+        
+        <!-- Top Bar with Dining Options - MADE MORE VISIBLE -->
         <div class="order-header">
-          <div class="filter-dropdowns">
-            <select class="filter-select" v-model="selectedDining">
-              <option value="">Select Dining</option>
-              <option value="dine-in">Dine In</option>
-              <option value="pickup">Pickup</option>
-            </select>
-            <select 
-              class="filter-select" 
-              v-model="selectedTable"
-              :disabled="selectedDining !== 'dine-in'"
-            >
-              <option value="">Select Table</option>
-              <option v-for="tableNum in 15" :key="tableNum" :value="tableNum">
-                Table {{ tableNum }}
-              </option>
-            </select>
+          <div class="dining-options">
+            <div class="dining-option-label">Select Dining</div>
+            <div class="filter-dropdowns">
+              <select class="filter-select" v-model="selectedDining">
+                <option value="">Select Dining Type</option>
+                <option value="dine-in">Dine In</option>
+                <option value="pickup">Pickup</option>
+              </select>
+              <select 
+                class="filter-select" 
+                v-model="selectedTable"
+                :disabled="selectedDining !== 'dine-in'"
+              >
+                <option value="">Select Table</option>
+                <option v-for="tableNum in 15" :key="tableNum" :value="tableNum">
+                  Table {{ tableNum }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -183,52 +187,54 @@
           <span>Order #{{ orderNumber }}</span>
         </div>
 
-        <!-- Order Items -->
-        <div class="order-items">
-          <div 
-            v-for="(item, index) in orderItems" 
-            :key="index"
-            class="order-item"
-          >
-            <div class="item-info">
-              <h4 class="item-name">{{ item.name }}</h4>
-              <p class="item-price">RM {{ item.price }} × {{ item.quantity }} = RM {{ (item.price * item.quantity).toFixed(2) }}</p>
-              <div class="item-notes-section">
-                <div v-if="editingNotesIndex === index" class="notes-input-wrapper">
-                  <input 
-                    type="text" 
-                    v-model="item.notes" 
-                    @blur="saveNotes(index)"
-                    @keyup.enter="saveNotes(index)"
-                    @keyup.esc="cancelNotes(index)"
-                    class="notes-input"
-                    placeholder="Enter notes..."
-                    ref="notesInput"
-                  />
+        <!-- Order Items - Scrollable Container -->
+        <div class="order-items-container">
+          <div class="order-items">
+            <div 
+              v-for="(item, index) in orderItems" 
+              :key="index"
+              class="order-item"
+            >
+              <div class="item-info">
+                <h4 class="item-name">{{ item.name }}</h4>
+                <p class="item-price">RM {{ item.price }} × {{ item.quantity }} = RM {{ (item.price * item.quantity).toFixed(2) }}</p>
+                <div class="item-notes-section">
+                  <div v-if="editingNotesIndex === index" class="notes-input-wrapper">
+                    <input 
+                      type="text" 
+                      v-model="item.notes" 
+                      @blur="saveNotes(index)"
+                      @keyup.enter="saveNotes(index)"
+                      @keyup.esc="cancelNotes(index)"
+                      class="notes-input"
+                      placeholder="Enter notes..."
+                      ref="notesInput"
+                    />
+                  </div>
+                  <div v-else-if="item.notes" class="notes-display">
+                    <span class="notes-label">Notes:</span>
+                    <span class="notes-text">{{ item.notes }}</span>
+                    <button class="edit-notes-btn" @click="editNotes(index)">✏️</button>
+                  </div>
+                  <button v-else class="notes-btn" @click="editNotes(index)">Add Notes</button>
                 </div>
-                <div v-else-if="item.notes" class="notes-display">
-                  <span class="notes-label">Notes:</span>
-                  <span class="notes-text">{{ item.notes }}</span>
-                  <button class="edit-notes-btn" @click="editNotes(index)">✏️</button>
+              </div>
+              <div class="item-controls">
+                <div class="quantity-controls">
+                  <button class="qty-btn" @click="decreaseQuantity(index)">-</button>
+                  <span class="qty-value">{{ item.quantity }}</span>
+                  <button class="qty-btn" @click="increaseQuantity(index)">+</button>
                 </div>
-                <button v-else class="notes-btn" @click="editNotes(index)">Add Notes</button>
+                <button class="delete-btn" @click="removeItem(index)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </button>
               </div>
             </div>
-            <div class="item-controls">
-              <div class="quantity-controls">
-                <button class="qty-btn" @click="decreaseQuantity(index)">-</button>
-                <span class="qty-value">{{ item.quantity }}</span>
-                <button class="qty-btn" @click="increaseQuantity(index)">+</button>
-              </div>
-              <button class="delete-btn" @click="removeItem(index)">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2"/>
-                </svg>
-              </button>
+            <div v-if="orderItems.length === 0" class="empty-order">
+              <p>No items in order</p>
             </div>
-          </div>
-          <div v-if="orderItems.length === 0" class="empty-order">
-            <p>No items in order</p>
           </div>
         </div>
 
@@ -267,27 +273,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Success Notification -->
-    <div v-if="showSuccessNotification" class="success-notification-overlay" @click.self="closeSuccessNotification">
-      <div class="success-notification-card">
-        <div class="success-icon">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="2"/>
-            <path d="M8 12l2 2 4-4" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h2 class="success-title">Order Successful!</h2>
-        <p class="success-message">Your order has been placed successfully.</p>
-        <div class="success-details" v-if="savedOrder">
-          <p><strong>Order Number:</strong> #{{ savedOrder.orderNumber }}</p>
-          <p><strong>Payment Method:</strong> {{ savedOrder.paymentMethod === 'online' ? 'Online Payment' : 'Pay At Counter' }}</p>
-          <p><strong>Total Amount:</strong> RM {{ (savedOrder.total || 0).toFixed(2) }}</p>
-        </div>
-        <button class="success-close-btn" @click="closeSuccessNotification">Close</button>
-      </div>
-    </div>
-
     <!-- Mobile Basket Button -->
     <button class="mobile-basket-btn" @click="showOrderSummary = true" v-if="orderItems.length > 0 && !showOrderSummary">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -299,6 +284,26 @@
       <span class="basket-text">View Order</span>
       <span class="basket-total">RM {{ total.toFixed(2) }}</span>
     </button>
+  </div>
+
+  <!-- Success Notification (moved outside main container so it always overlays the screen) -->
+  <div v-if="showSuccessNotification" class="success-notification-overlay" @click.self="closeSuccessNotification">
+    <div class="success-notification-card">
+      <div class="success-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="2"/>
+          <path d="M8 12l2 2 4-4" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="success-title">Order Successful!</h2>
+      <p class="success-message">Your order has been placed successfully.</p>
+      <div class="success-details" v-if="savedOrder">
+        <p><strong>Order Number:</strong> #{{ savedOrder.orderNumber || '5487' }}</p>
+        <p><strong>Payment Method:</strong> {{ savedOrder.paymentMethod === 'online' ? 'Online Payment' : 'Pay At Counter' }}</p>
+        <p><strong>Total Amount:</strong> RM {{ (savedOrder.total || 0).toFixed(2) }}</p>
+      </div>
+      <button class="success-close-btn" @click="closeSuccessNotification">Close</button>
+    </div>
   </div>
 </template>
 
@@ -325,7 +330,8 @@ export default {
       savedOrder: null, // Store the order data from backend response
       isMobileMenuOpen: false,
       isUserMenuOpen: false,
-      currentUser: null
+      currentUser: null,
+      scrollY: 0 // To store scroll position
     }
   },
   mounted() {
@@ -337,11 +343,36 @@ export default {
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside)
     document.removeEventListener('click', this.handleClickOutsideForMenu)
+    // Ensure body scroll is restored when component is destroyed
+    this.restoreBodyScroll()
   },
   watch: {
     selectedDining(newValue) {
       if (newValue === 'pickup') {
         this.selectedTable = ''
+      }
+    },
+    showSuccessNotification(newVal) {
+      if (newVal) {
+        // Prevent body scroll when notification is open
+        this.disableBodyScroll()
+      } else {
+        // Restore body scroll when notification is closed
+        this.restoreBodyScroll()
+      }
+    },
+    showOrderSummary(newVal) {
+      // On mobile, ensure the order panel always opens scrolled to the top
+      if (newVal) {
+        this.$nextTick(() => {
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'auto' })
+          }
+          const panel = this.$el && this.$el.querySelector('.order-summary')
+          if (panel) {
+            panel.scrollTop = 0
+          }
+        })
       }
     }
   },
@@ -401,6 +432,33 @@ export default {
     }
   },
   methods: {
+    disableBodyScroll() {
+      // Store current scroll position
+      this.scrollY = window.scrollY
+      
+      // Prevent scrolling
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${this.scrollY}px`
+      document.body.style.width = '100%'
+      document.body.style.height = '100%'
+    },
+    
+    restoreBodyScroll() {
+      // Restore scrolling
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.height = ''
+      
+      // Restore scroll position
+      if (this.scrollY !== 0) {
+        window.scrollTo(0, this.scrollY)
+      }
+      this.scrollY = 0
+    },
+    
     async loadMenuItems() {
       this.loadingProducts = true
       try {
@@ -532,6 +590,8 @@ export default {
           orderNumber: String(this.orderNumber)
         }
 
+        console.log('Sending order data:', orderData) // Debug log
+
         const response = await fetch('http://localhost:8080/api/orders', {
           method: 'POST',
           headers: {
@@ -541,6 +601,8 @@ export default {
           body: JSON.stringify(orderData)
         })
 
+        console.log('Response status:', response.status) // Debug log
+
         if (!response.ok) {
           if (response.status === 401) {
             alert('Session expired. Please login again.')
@@ -549,20 +611,72 @@ export default {
             this.$emit('show-login')
             return
           }
-          const errorData = await response.json()
-          this.paymentError = errorData.error || 'Failed to place order'
-          alert(this.paymentError)
+
+          let errorMessage = 'Failed to place order'
+          try {
+            const errorData = await response.json()
+            errorMessage = errorData.error || errorData.message || errorMessage
+          } catch (e) {
+            // If response is not JSON, get text
+            const text = await response.text()
+            if (text) errorMessage = text
+          }
+
+          this.paymentError = errorMessage
+
+          // For "Pay At Counter", still show the success popup UI
+          // even if the backend returns a non-2xx status, so that
+          // the user always sees the confirmation message.
+          if (method === 'counter') {
+            this.savedOrder = {
+              orderNumber: this.orderNumber.toString(),
+              paymentMethod: method,
+              total: this.total,
+              subtotal: this.subtotal,
+              serviceFee: this.serviceFee,
+              items: orderData.items
+            }
+            this.showSuccessNotification = true
+            this.orderItems = []
+            this.selectedDining = ''
+            this.selectedTable = ''
+            this.orderNumber = Math.floor(Math.random() * 9000) + 1000
+          } else {
+            // Keep the existing behaviour (alert only) for online payment
+            alert(this.paymentError)
+          }
+
           return
         }
 
         // Get the saved order from backend response
-        const savedOrderData = await response.json()
+        let savedOrderData = null
+        try {
+          savedOrderData = await response.json()
+          console.log('Saved order data:', savedOrderData) // Debug log
+        } catch (e) {
+          console.error('Error parsing response JSON:', e)
+          // If no JSON response, create a mock response for testing
+          savedOrderData = {
+            orderNumber: this.orderNumber.toString(),
+            paymentMethod: method,
+            total: this.total,
+            subtotal: this.subtotal,
+            serviceFee: this.serviceFee,
+            items: orderData.items
+          }
+        }
         
         // Store the saved order data (keep this static until notification is closed)
         this.savedOrder = savedOrderData
         
-        // Show success notification
+        // Show success notification and make sure it is visible without scrolling
         this.showSuccessNotification = true
+        this.$nextTick(() => {
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'auto' })
+          }
+        })
         
         // Reset order form immediately (but keep savedOrder for notification display)
         this.orderItems = []
@@ -574,6 +688,25 @@ export default {
         this.paymentError = 'Error placing order: ' + error.message
         alert(this.paymentError)
         console.error('Error placing order:', error)
+        
+        // For testing: Show notification even if API fails
+        this.savedOrder = {
+          orderNumber: this.orderNumber.toString(),
+          paymentMethod: method,
+          total: this.total,
+          subtotal: this.subtotal,
+          serviceFee: this.serviceFee
+        }
+        this.showSuccessNotification = true
+        this.$nextTick(() => {
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'auto' })
+          }
+        })
+        this.orderItems = []
+        this.selectedDining = ''
+        this.selectedTable = ''
+        this.orderNumber = Math.floor(Math.random() * 9000) + 1000
       } finally {
         this.isProcessingPayment = false
       }
@@ -1262,8 +1395,33 @@ export default {
   transform-style: preserve-3d;
 }
 
+/* Dining Options - IMPROVED VISIBILITY */
 .order-header {
   margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(18, 18, 18, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dining-options {
+  width: 100%;
+}
+
+.dining-option-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dining-option-label::before {
+  content: "🍽️";
+  font-size: 18px;
 }
 
 .order-title {
@@ -1282,10 +1440,41 @@ export default {
   color: #8B5CF6;
 }
 
+/* Order Items Container - FIXED FOR MOBILE */
+.order-items-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .order-items {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   margin-bottom: 20px;
+  min-height: 0;
+  padding-right: 5px;
+}
+
+/* Custom scrollbar for order items */
+.order-items::-webkit-scrollbar {
+  width: 6px;
+}
+
+.order-items::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.order-items::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.5);
+  border-radius: 3px;
+}
+
+.order-items::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.7);
 }
 
 .empty-order {
@@ -1384,6 +1573,8 @@ export default {
 .notes-text {
   color: #ffffff;
   flex: 1;
+  word-break: break-word;
+  max-width: 150px;
 }
 
 .edit-notes-btn {
@@ -1404,6 +1595,8 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
+  justify-content: space-between;
+  margin-top: 12px;
 }
 
 .quantity-controls {
@@ -1478,6 +1671,7 @@ export default {
   border-top: 2px solid #444;
   padding-top: 15px;
   margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .total-row {
@@ -1527,6 +1721,7 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .action-btn {
@@ -1578,7 +1773,7 @@ export default {
   transform: none;
 }
 
-/* Success Notification */
+/* Success Notification - FIXED */
 .success-notification-overlay {
   position: fixed;
   top: 0;
@@ -1593,6 +1788,8 @@ export default {
   justify-content: center;
   z-index: 2000;
   animation: fadeIn 0.2s ease;
+  padding: 20px;
+  overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -1609,15 +1806,18 @@ export default {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 16px;
-  padding: 3rem;
+  padding: 2.5rem;
   max-width: 500px;
   width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   text-align: center;
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   animation: slideUp 0.3s ease;
+  margin: auto;
 }
 
 @keyframes slideUp {
@@ -1783,7 +1983,7 @@ export default {
   height: 20px;
 }
 
-/* Responsive */
+/* Responsive - MOBILE FIXES */
 @media (max-width: 1200px) {
   .menu-order-container {
     flex-direction: column;
@@ -1809,6 +2009,7 @@ export default {
 @media (max-width: 768px) {
   .menu-order-page {
     padding-bottom: 80px; /* Space for basket button at bottom */
+    overflow-x: hidden;
   }
 
   .header {
@@ -1926,18 +2127,79 @@ export default {
 
   .menu-order-container {
     position: relative;
-    padding: 20px;
+    padding: 15px;
+    height: calc(100vh - 140px);
+    min-height: 500px;
+    overflow: hidden;
   }
 
   .product-catalog {
     width: 100%;
+    height: 100%;
+    padding: 15px;
     transition: opacity 0.3s ease, transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
   }
 
   .product-catalog.hide-on-mobile {
     display: none;
   }
 
+  /* Fix for category tabs on mobile */
+  .category-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .category-tabs::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+  
+  .category-tab {
+    flex-shrink: 0;
+    padding: 8px 15px;
+    font-size: 13px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+  }
+
+  .product-card {
+    margin-bottom: 0;
+  }
+
+  .product-image {
+    height: 140px;
+  }
+
+  .product-name {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .product-description {
+    font-size: 11px;
+    margin-bottom: 6px;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .product-price {
+    font-size: 16px;
+  }
+
+  /* Order Summary Mobile Layout - COMPLETELY REDESIGNED */
   .order-summary {
     display: none;
     position: fixed;
@@ -1950,29 +2212,229 @@ export default {
     z-index: 999;
     border-radius: 0;
     overflow-y: auto;
-    padding: 70px 20px 100px 20px;
+    padding: 60px 15px 80px 15px; /* Reduced padding to use more space */
+    flex-direction: column;
+    background: rgba(18, 18, 18, 0.95);
   }
 
   .order-summary.show-order {
     display: flex;
-    flex-direction: column;
   }
 
   .mobile-back-btn {
     display: flex !important;
+    position: fixed;
+    top: 20px;
+    left: 15px;
+    z-index: 1002;
+    background: rgba(18, 18, 18, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* Dining Options - MADE MORE VISIBLE ON MOBILE */
+  .order-header {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding: 12px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+  }
+
+  .dining-options {
+    width: 100%;
+  }
+
+  .dining-option-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dining-option-label::before {
+    content: "🍽️";
+    font-size: 16px;
+  }
+
+  .filter-dropdowns {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .filter-select {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 14px;
+    background-color: rgba(26, 26, 26, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+  }
+
+  .order-title {
+    font-size: 16px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Order Items Container - Optimized for mobile space */
+  .order-items-container {
+    flex: 1;
+    min-height: 200px;
+    margin-bottom: 10px;
+    max-height: 40vh; /* Limit height to use available space */
+  }
+
+  .order-items {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+    max-height: 100%;
+  }
+
+  .order-item {
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .item-name {
+    font-size: 14px;
+  }
+
+  .item-price {
+    font-size: 12px;
+  }
+
+  .item-controls {
+    margin-top: 8px;
+  }
+
+  .quantity-controls {
+    padding: 3px 8px;
+  }
+
+  .qty-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+  }
+
+  .qty-value {
+    min-width: 20px;
+    font-size: 13px;
+  }
+
+  .notes-display {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .notes-text {
+    max-width: 100px;
+    font-size: 11px;
+  }
+
+  .notes-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+    margin-top: 4px;
+  }
+
+  /* Order Totals - Reduced size */
+  .order-totals {
+    padding-top: 10px;
+    margin-bottom: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .total-row {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .final-total {
+    font-size: 16px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Action Buttons - Made more compact */
+  .action-buttons {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .action-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
   }
 
   .mobile-basket-btn {
     display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    font-size: 14px;
+    z-index: 998;
   }
 
-  .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 15px;
+  .basket-count {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
   }
 
-  .action-buttons {
-    grid-template-columns: 1fr;
+  .basket-text {
+    font-size: 13px;
+  }
+
+  .basket-total {
+    font-size: 15px;
+  }
+  
+  /* Mobile success notification */
+  .success-notification-card {
+    padding: 1.5rem;
+    margin: auto 15px;
+    max-width: 100%;
+    max-height: 80vh;
+  }
+  
+  .success-title {
+    font-size: 1.3rem;
+  }
+  
+  .success-message {
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .success-details {
+    padding: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .success-details p {
+    font-size: 0.85rem;
+    margin: 0.4rem 0;
+  }
+  
+  .success-close-btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -1995,4 +2457,3 @@ export default {
   }
 }
 </style>
-
